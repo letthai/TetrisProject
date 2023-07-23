@@ -1,7 +1,2 @@
-﻿  main.cpp
-D:\BTL\TetrisProject\TetrisUpdate\TetrisUpdate\main.cpp(2,10): warning C4067: unexpected tokens following preprocessor directive - expected a newline
-  Object.cpp
-  screen.cpp
-  Screen_function.cpp
-  Generating Code...
+﻿  screen.cpp
   TetrisUpdate.vcxproj -> D:\BTL\TetrisProject\TetrisUpdate\Debug\TetrisUpdate.exe

@@ -18,10 +18,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Screen_function.cpp">
+    <ClCompile Include="screen.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="screen.cpp">
+    <ClCompile Include="tetris.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -30,6 +30,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tetris.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

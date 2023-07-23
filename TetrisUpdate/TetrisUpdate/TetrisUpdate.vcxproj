@@ -143,14 +143,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Object.cpp" />
     <ClCompile Include="screen.cpp" />
-    <ClCompile Include="Screen_function.cpp" />
+    <ClCompile Include="tetris.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Block.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="screen.h" />
+    <ClInclude Include="tetris.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
