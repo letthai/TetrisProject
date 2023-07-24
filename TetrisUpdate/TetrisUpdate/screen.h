@@ -9,13 +9,20 @@ const int SCREEN_HEIGHT = 667;
 const int SCREEN_BPP = 32;
 
 //Quan ly screen background va su kien
-static SDL_Surface* tetris_screen = NULL;
-static SDL_Surface* tetris_background = NULL;
+static SDL_Window* tetris_window = NULL;
+static SDL_Surface* tetris_screen = NULL; //be mat chua boi cua so
+static SDL_Surface* tetris_background = NULL; // tai anh len man hinh
 static SDL_Event tetris_event;
 
-SDL_Surface* LoadImage(string filepath);
-void applySurface(SDL_Surface* src, SDL_Surface* des, int x, int y);
+//giai phong noi dung va dong SDL
 void cleanUp();
+
+//Khoi tao SDL va tao cua so
+bool init();
+
+//Loads individual image
+SDL_Surface* loadSurface(string path);
+//void applySurface(SDL_Surface* src, SDL_Surface* des, int x, int y);
 #endif // !SCREEN_H
 
 
