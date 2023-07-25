@@ -15,19 +15,39 @@
 //}
 //
 
-
+//bool loadSurfaceMedia(string path)
+//{
+//	tetris_background = loadSurface(path.c_str());
+//	if (tetris_background == NULL) return false;
+//	return true;
+//}
+//
+//bool loadTextureMedia(string path)
+//{
+//	tetris_texture = loadTexture(path.c_str());
+//	if (tetris_texture == NULL) return false;
+//	return true;
+//}
 
 void cleanUp()
 {
-	//Free loaded image
+	// Giai phong be mat
 	SDL_FreeSurface(tetris_background);
 	tetris_background = NULL;
 
-	//Destroy window
+	// Pha huy cua so
 	SDL_DestroyWindow(tetris_window);
 	tetris_window = NULL;
 
-	//Quit SDL subsystems
+	// Giai phong texture
+	SDL_DestroyTexture(tetris_texture);
+	tetris_texture = NULL;
+
+	// Pha huy renderer    
+	SDL_DestroyRenderer(tetris_renderer);
+	tetris_renderer = NULL;
+
+	// Thoat khoi SDL
 	IMG_Quit();
 	SDL_Quit();
 }
