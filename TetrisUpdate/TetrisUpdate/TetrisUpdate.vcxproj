@@ -146,15 +146,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="action.cpp" />
+    <ClCompile Include="handlemedia.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="media.cpp" />
     <ClCompile Include="screen.cpp" />
     <ClCompile Include="tetris.cpp" />
+    <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="action.h" />
+    <ClInclude Include="block.h" />
+    <ClInclude Include="handlemedia.h" />
     <ClInclude Include="Header.h" />
+    <ClInclude Include="media.h" />
     <ClInclude Include="screen.h" />
     <ClInclude Include="tetris.h" />
+    <ClInclude Include="window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
