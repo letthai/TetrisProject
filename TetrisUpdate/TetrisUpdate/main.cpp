@@ -1,8 +1,6 @@
 #include "Header.h"
-#include "screen.h";
 #include "window.h"
 #include "handlemedia.h"
-#include "media.h"
 
 #undef main
 
@@ -47,12 +45,7 @@ void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y) {
 int main(int argc, char* args[])
 {
 	Window window("Super Tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
-
-	SDL_Window* sdlwindow = window.getWindow();
 	SDL_Renderer* sdlrender = window.getRenderer();
-	SDL_Surface* sdlscreen = window.getTetrisScreen();
-	SDL_Surface* sdlbackground = loadSurface(sdlscreen, "image/background/space.png");
-	SDL_Texture* sdltexture = SDL_CreateTextureFromSurface(sdlrender, sdlbackground);
 
 	SDL_Texture* list_texture[] = {
 		loadTexture(sdlrender, "image/block/planet_1.png"),
@@ -64,7 +57,7 @@ int main(int argc, char* args[])
 	};
 
 	bool flags = true;
-	if (!init(window.getWindow(), window.getRenderer(), window.getTetrisScreen()))
+	if (!window.init())
 	{
 		printf("Failed to initialize!\n");
 	}
@@ -130,7 +123,7 @@ int main(int argc, char* args[])
 				SDL_RenderClear(sdlrender);
 
 				// Draw background
-				SDL_RenderCopy(sdlrender, sdltexture, NULL, NULL);
+				SDL_RenderCopy(sdlrender, window.getTetrisBackground(), NULL, NULL);
 
 				// Draw the tetromino
 				draw(sdlrender, list_texture, 1);
@@ -145,10 +138,7 @@ int main(int argc, char* args[])
 		}
 	}
 	
-	//applySurface(sdlbackground, sdlscreen, sdlwindow, "image/background/space.jpg");
-	SDL_Delay(5000);
-	//close SDL
-	cleanUp();
+	window.cleanUp();
 
 	return 0;
 }

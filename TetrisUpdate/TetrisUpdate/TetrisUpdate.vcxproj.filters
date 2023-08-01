@@ -18,33 +18,27 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="screen.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="window.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="media.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="handlemedia.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tetromino.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="screen.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Header.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="window.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="media.h">
+    <ClInclude Include="handlemedia.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="handlemedia.h">
+    <ClInclude Include="tetromino.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

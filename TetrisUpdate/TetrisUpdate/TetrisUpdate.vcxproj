@@ -147,15 +147,13 @@
   <ItemGroup>
     <ClCompile Include="handlemedia.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="media.cpp" />
-    <ClCompile Include="screen.cpp" />
+    <ClCompile Include="tetromino.cpp" />
     <ClCompile Include="window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="handlemedia.h" />
     <ClInclude Include="Header.h" />
-    <ClInclude Include="media.h" />
-    <ClInclude Include="screen.h" />
+    <ClInclude Include="tetromino.h" />
     <ClInclude Include="window.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

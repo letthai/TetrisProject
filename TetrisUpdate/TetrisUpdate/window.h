@@ -2,6 +2,8 @@
 #define WINDOW_H
 
 #include <SDL.h>
+#include <SDL_image.h>
+#include "handlemedia.h"
 
 class Window
 {
@@ -12,11 +14,16 @@ public:
 	SDL_Window* getWindow() const;
 	SDL_Renderer* getRenderer() const;
 	SDL_Surface* getTetrisScreen() const;
+	SDL_Texture* getTetrisBackground() const;
+
+	bool init();
+	void cleanUp();
 
 private:
-	SDL_Window* tetris_window;
-	SDL_Renderer* tetris_renderer;
-	SDL_Surface* tetris_screen;
+	SDL_Window* tetris_window = NULL;
+	SDL_Renderer* tetris_renderer = NULL;
+	SDL_Surface* tetris_screen = NULL;
+	SDL_Texture* tetris_background = NULL;
 };
 
 #endif // !WINDOW_H

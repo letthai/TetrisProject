@@ -25,3 +25,32 @@ SDL_Window* Window::getWindow() const {
 SDL_Surface* Window::getTetrisScreen() const {
 	return tetris_screen;
 }
+
+SDL_Texture* Window::getTetrisBackground() const {
+	return tetris_background;
+}
+
+bool Window::init() {
+	if (SDL_Init(SDL_INIT_VIDEO) < 0) return false;
+
+	if (tetris_window == NULL) return false;
+	if (tetris_renderer == NULL) return false;
+	if (tetris_screen == NULL) return false;
+
+	//Initialize PNG and JPG loading
+	int imgFlags = IMG_INIT_JPG;
+	int imgFlag = IMG_INIT_PNG;
+	if (!(IMG_Init(imgFlags) & imgFlags)) return false;
+	if (!(IMG_Init(imgFlag) & imgFlag)) return false;
+
+	SDL_Surface* sdlbackground = loadSurface(tetris_screen, "image/background/space.png");
+	tetris_background = SDL_CreateTextureFromSurface(tetris_renderer, sdlbackground);
+
+	return true;
+}
+
+void Window::cleanUp() {
+	// Thoat khoi SDL
+	IMG_Quit();
+	SDL_Quit();
+}
