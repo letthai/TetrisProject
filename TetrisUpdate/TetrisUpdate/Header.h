@@ -6,4 +6,8 @@
 #include <stdio.h>
 #include <SDL_image.h>
 #include <string>
+#include <vector>
+#include <cstdlib>
+#include <random>
+#include <ctime>
 using namespace std;

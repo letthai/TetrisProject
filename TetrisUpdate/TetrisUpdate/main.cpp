@@ -7,6 +7,43 @@
 
 #undef main
 
+//quan ly vung choi
+const int height = 20;
+const int width = 10;
+const int SQUARE_SIZE = 40;
+
+int field[height][width] = { 0 };
+
+struct position {
+	int x;
+	int y;
+}
+shape1[4],
+shape2[4];
+
+void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y);
+void draw(SDL_Renderer* renderer, SDL_Texture* texture[], int n);
+
+//ve cac khoi
+void draw(SDL_Renderer* renderer, SDL_Texture* texture[], int n) {
+	srand(static_cast<unsigned int>(time(0)));
+
+	for (int i = 0; i < 4; i++) {
+		shape1[i].x = (block[n][i] % 2) * SQUARE_SIZE + 5;
+		shape1[i].y = (block[n][i] / 2) * SQUARE_SIZE + 5;
+	}
+	for (int i = 0; i < 4; i++) {
+		int x = rand() % 6;
+		drawTexture(renderer, texture[1], shape1[i].x, shape1[i].y);
+	}
+}
+
+void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y) {
+	SDL_Rect destRect = { x, y, SQUARE_SIZE, SQUARE_SIZE };
+	SDL_RenderCopy(renderer, texture, NULL, &destRect);
+	SDL_RenderPresent(renderer);
+}
+
 int main(int argc, char* args[])
 {
 	Window window("Super Tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
@@ -17,6 +54,15 @@ int main(int argc, char* args[])
 	SDL_Surface* sdlscreen = window.getTetrisScreen();
 	SDL_Surface* sdlbackground = media.getTetrisbackground();
 	SDL_Texture* sdltexture = media.getTetrisTexture();
+
+	SDL_Texture* list_texture[] = {
+		loadTexture(sdlrender, "image/block/planet_1.png"),
+		loadTexture(sdlrender, "image/block/planet_2.png"),
+		loadTexture(sdlrender, "image/block/planet_3.png"),
+		loadTexture(sdlrender, "image/block/planet_4.png"),
+		loadTexture(sdlrender, "image/block/planet_5.png"),
+		loadTexture(sdlrender, "image/block/planet_6.png"), 
+	};
 
 	bool flags = true;
 	if (!init(window.getWindow(), window.getRenderer(), window.getTetrisScreen()))
@@ -49,13 +95,18 @@ int main(int argc, char* args[])
 						quit = true;
 					}
 				}
-				applySurface(sdlbackground, sdlscreen, sdlwindow, "image/background/space.jpg");
-				//applyTexture(sdlrender, tetris_texture, "image/block/planet-1.png");
+				//applySurface(sdlbackground, sdlscreen, sdlwindow, "image/background/space.jpg");
+				applyTexture(sdlrender, sdltexture, "image/background/space.jpg");
+	draw(sdlrender, list_texture, 1);
+				
+				//applyTexture(sdlrender, sdltexture, "image/block/planet-1.png");
 			}
 		}
 	}
 	
-	//Free resources and close SDL
+	//applySurface(sdlbackground, sdlscreen, sdlwindow, "image/background/space.jpg");
+	SDL_Delay(5000);
+	//close SDL
 	cleanUp();
 
 	return 0;

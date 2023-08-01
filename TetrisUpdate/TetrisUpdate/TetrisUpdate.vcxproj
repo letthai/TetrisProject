@@ -155,7 +155,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="action.h" />
-    <ClInclude Include="block.h" />
     <ClInclude Include="handlemedia.h" />
     <ClInclude Include="Header.h" />
     <ClInclude Include="media.h" />
