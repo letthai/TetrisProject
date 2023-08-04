@@ -7,6 +7,16 @@ void applyTexture(SDL_Renderer* renderer, SDL_Texture* texture, string filepath)
 	SDL_RenderPresent(renderer);
 }
 
+void moveRect(SDL_Rect& rect, int x, int y) {
+	rect.x += x;
+	rect.y += y;
+}
+
+void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y) {
+	SDL_Rect destRect = { x, y, SQUARE_SIZE, SQUARE_SIZE };
+	moveRect(destRect, 341, 13);
+	SDL_RenderCopy(renderer, texture, NULL, &destRect);
+}
 
 SDL_Texture* loadTexture(SDL_Renderer* renderer, string path)
 {

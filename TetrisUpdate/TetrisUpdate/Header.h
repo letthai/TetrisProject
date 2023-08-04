@@ -25,3 +25,9 @@ const int block[7][4] = {
 	3, 5, 7, 6, // j
 	2, 3, 4, 5, //o vuong
 };
+
+//quan ly vung choi
+const int height = 20;
+const int width = 10;
+const int SQUARE_SIZE = 32;
+

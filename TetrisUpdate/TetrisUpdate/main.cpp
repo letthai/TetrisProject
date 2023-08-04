@@ -4,12 +4,10 @@
 
 #undef main
 
-//quan ly vung choi
-const int height = 20;
-const int width = 10;
-const int SQUARE_SIZE = 32;
-
+// Create array to check if this location has block
 int field[height][width] = { 0 };
+
+int colorOfBlock[4];
 
 struct Position {
 	int x;
@@ -18,32 +16,19 @@ struct Position {
 shape1[4],
 shape2[4];
 
-void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y);
-void draw(SDL_Renderer* renderer, SDL_Texture* texture[], int n);
-
-//ve cac khoi
-void draw(SDL_Renderer* renderer, SDL_Texture* texture[], int n) {
-	srand(static_cast<unsigned int>(time(0)));
-	if (shape1[0].x == 0) {
-		for (int i = 0; i < 4; i++) {
-				shape1[i].x = (block[n][i] % 2);
-				shape1[i].y = (block[n][i] / 2);
-			}
-	}
-	
+// Check the tetromino inside the play zone or not?
+bool check() {
 	for (int i = 0; i < 4; i++) {
-		int x = rand() % 6;
-		drawTexture(renderer, texture[x], shape1[i].x * SQUARE_SIZE, shape1[i].y * SQUARE_SIZE);
+		if (shape1[i].x < 0 || shape1[i].x >= width || shape1[i].y >= height) return false;
+		else if (field[shape1[i].y][shape1[i].x]) return false;
 	}
-}
-
-void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y) {
-	SDL_Rect destRect = { x, y, SQUARE_SIZE, SQUARE_SIZE };
-	SDL_RenderCopy(renderer, texture, NULL, &destRect);
+	return true;
 }
 
 int main(int argc, char* args[])
 {
+	srand(time(0));
+
 	Window window("Super Tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	SDL_Renderer* sdlrender = window.getRenderer();
 
@@ -70,12 +55,18 @@ int main(int argc, char* args[])
 		else
 		{
 			bool isPlaying = true;
+			int score = 0;
 			SDL_Event e;
 			int delta = 0;
 			bool isRotate = false;
+			int delay = 300;
+			Uint32 startTime = 0;
 			//While application is running
 			while (isPlaying)
 			{
+
+				Uint32 currentTime = SDL_GetTicks();
+
 				//Handle events on queue
 				while (SDL_PollEvent(&e) != 0)
 				{
@@ -90,6 +81,7 @@ int main(int argc, char* args[])
 							isRotate = true;
 							break;
 						case SDLK_DOWN:
+							delay = 50;
 							break;
 						case SDLK_LEFT:
 							delta = -1;
@@ -105,43 +97,99 @@ int main(int argc, char* args[])
 					}
 				}
 
+				// Move tetromino to the left or right
 				for (int i = 0; i < 4; i++) {
+					shape2[i] = shape1[i];
 					shape1[i].x += delta;
 				}
+				if (!check()) {
+					for (int i = 0; i < 4; i++) shape1[i] = shape2[i];
+				}
 
+				// Rotate the tetromino
 				if (isRotate) {
-					Position point = shape1[2];
+					Position point = shape1[1];
 					for (int i = 0; i < 4; i++) {
 						int a = shape1[i].y - point.y;
 						int b = shape1[i].x - point.x;
 						shape1[i].x = point.x - a;
 						shape1[i].y = point.y + b;
- 					}
+					}
+					if (!check()) for (int i = 0; i < 4; i++) shape1[i] = shape2[i];
 				}
 
-				SDL_SetRenderDrawColor(sdlrender, 0, 0, 0, 255);
-				SDL_RenderClear(sdlrender);
+				// Run down the tetromino faster and create new tetromino
+				if (currentTime - startTime > delay) {
+					for (int i = 0; i < 4; i++) {
+						shape2[i] = shape1[i];
+						shape1[i].y++;
+					}
+					if (!check()) {
+						for (int i = 0; i < 4; i++) {
+							field[shape2[i].y][shape2[i].x] = 1 + colorOfBlock[i];
+						}
+						for (int i = 0; i < 4; i++) {
+							int randomNumber = rand() % 6;
+							colorOfBlock[i] = randomNumber;
+						}
+						int n = rand() % 7;
+						for (int i = 0; i < 4; i++) {
+							shape1[i].x = (block[n][i] % 2);
+							shape1[i].y = (block[n][i] / 2);
+						}
+					}
+					startTime = currentTime;
+				}
 
-				// Draw background
-				SDL_RenderCopy(sdlrender, window.getTetrisBackground(), NULL, NULL);
+				// Check line if have all block in this line
+				int line = height - 1;
+				for (int i = height - 1; i > 0; i--)
+				{
+					int count = 0;
+					for (int j = 0; j < width; j++)
+					{
+						if (field[i][j]) count++;
+						field[line][j] = field[i][j];
+					}
+					if (count < width) line--;
+				}
 
-				// Draw the tetromino
-				draw(sdlrender, list_texture, 1);
+				// Check group of the block if have same texture
+				/*int count = 0;
+				for (int i = 0; i < 4; i++) {
+					if()
+				}*/
 
-				// Reset the variable of action
 				delta = 0;
 				isRotate = false;
+				delay = 300;
+
+				SDL_RenderClear(sdlrender);
+
+				SDL_RenderCopy(sdlrender, window.getTetrisBackground(), NULL, NULL);
+
+				// Render the tetromino when it stop
+				for (int i = 0; i < height; i++) {
+					for (int j = 0; j < width; j++) {
+						if (field[i][j]) {
+							drawTexture(sdlrender, list_texture[field[i][j] - 1], j * SQUARE_SIZE, i * SQUARE_SIZE);
+						}
+					}
+				}
+
+				// Render the tetromino when it is running down
+				for (int i = 0; i < 4; i++) {
+					drawTexture(sdlrender, list_texture[colorOfBlock[i]], shape1[i].x * SQUARE_SIZE, shape1[i].y * SQUARE_SIZE);
+				}
 
 				// Update the screen
 				SDL_RenderPresent(sdlrender);
 			}
 		}
 	}
-	
+
+	// Clear data
 	window.cleanUp();
 
 	return 0;
 }
-
-
-

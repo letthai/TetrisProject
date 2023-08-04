@@ -1,4 +1,7 @@
-﻿  tetromino.cpp
+﻿  handlemedia.cpp
+  main.cpp
+D:\BTL\TetrisProject\TetrisUpdate\TetrisUpdate\main.cpp(30,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+D:\BTL\TetrisProject\TetrisUpdate\TetrisUpdate\main.cpp(121,33): warning C4018: '>': signed/unsigned mismatch
   window.cpp
   Generating Code...
   TetrisUpdate.vcxproj -> D:\BTL\TetrisProject\TetrisUpdate\x64\Debug\TetrisUpdate.exe
