@@ -10,6 +10,8 @@
 #include <cstdlib>
 #include <random>
 #include <ctime>
+#include<SDL_ttf.h>
+
 using namespace std;
 
 //Quan ly man hinh
