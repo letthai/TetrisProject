@@ -35,6 +35,10 @@ SDL_Texture* Window::getTetrisFrame() const {
 	return tetris_frame;
 }
 
+SDL_Texture* Window::getTable() const {
+	return table;
+}
+
 Mix_Chunk* Window::getSound() const {
 	return sound;
 }
@@ -68,8 +72,11 @@ bool Window::init() {
 	SDL_Surface* sdlbackground = loadSurface(tetris_screen, "image/background/space1.png");
 	tetris_background = SDL_CreateTextureFromSurface(tetris_renderer, sdlbackground);
 
+	SDL_Surface* sdltable = loadSurface(tetris_screen, "image/background/table.png");
+	table = SDL_CreateTextureFromSurface(tetris_renderer, sdltable);
 	return true;
 }
+
 
 void Window::cleanUp() {
 	// Thoat khoi SDL

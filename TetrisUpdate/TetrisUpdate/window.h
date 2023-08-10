@@ -17,6 +17,7 @@ public:
 	SDL_Surface* getTetrisScreen() const;
 	SDL_Texture* getTetrisBackground() const;
 	SDL_Texture* getTetrisFrame() const;
+	SDL_Texture* getTable() const;
 	Mix_Chunk* getSound() const;
 
 	bool init();
@@ -28,6 +29,7 @@ private:
 	SDL_Surface* tetris_screen = NULL;
 	SDL_Texture* tetris_background = NULL;
 	SDL_Texture* tetris_frame = NULL;
+	SDL_Texture* table = NULL;
 	Mix_Chunk* sound = NULL;
 };
 
