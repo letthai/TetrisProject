@@ -135,7 +135,8 @@ int main(int argc, char* args[])
 	Button button_pause(sdlrender, "image/button/pause_1.png", "image/button/pause_2.png", 900, 10, 40, 40);
 	Button button_hs(sdlrender, "image/button/hs_1.png", "image/button/hs_2.png", 426, 355, 150, 70);
 	Button button_resume(sdlrender, "image/button/resume_1.png", "image/button/resume_2.png", 426, 175, 150, 70);
-	Button button_save(sdlrender, "image/button/save_1.png", "image/button/save_2.png", 426, 265, 150, 70);
+	Button button_save(sdlrender, "image/button/save_1.png", "image/button/save_2.png", 426, 355, 150, 70);
+	Button button_ng(sdlrender, "image/button/ng_1.png", "image/button/ng_2.png", 426, 265, 150, 70);
 	Button button_mute(sdlrender, "image/button/mute.png", "image/button/mute.png", 950, 10, 40, 40);
 	Button button_unmute(sdlrender, "image/button/unmute_1.png", "image/button/unmute_1.png", 950, 10, 40, 40);
 	Button button_x(sdlrender, "image/button/x_1.png", "image/button/x_2.png", 680, 235, 50, 50);
@@ -171,6 +172,7 @@ int main(int argc, char* args[])
 			bool isContinue = false;
 			bool playSound = true;
 			bool isCheckHs = false;
+			bool playNewGame = false;
 
 			SDL_Color fg = { 255, 255, 255 };
 			SDL_Color bg = { 0, 0, 0 };
@@ -223,6 +225,7 @@ int main(int argc, char* args[])
 						button_unmute.checkEventPress(e);
 						button_hs.checkEventPress(e);
 						button_x.checkEventPress(e);
+						button_ng.checkEventPress(e);
 						if (button_quit.isPressed() == true) isPlaying = false;
 
 						if (button_hs.isPressed() == true) isCheckHs = true;
@@ -240,42 +243,50 @@ int main(int argc, char* args[])
 						}
 
 						// Check if user save game
-						if (button_save.isPressed() == true) {
-							isSave = true;
+						//if (button_save.isPressed() == true) {
+						//	isSave = true;
 
-							if (isSave == true) {
-								for (int i = 0; i < height; i++) {
-									for (int j = 0; j < width; j++) {
-										gameState.field_save[i][j] = field[i][j];
-									}
-								}
-								for (int i = 0; i < 4; i++) {
-									gameState.shape1_save[i].x = shape1[i].x;
-									gameState.shape1_save[i].y = shape1[i].y;
-									gameState.shape2_save[i].x = shape2[i].x;
-									gameState.shape2_save[i].y = shape2[i].y;
-									gameState.colorOfBlock_save[i] = colorOfBlock[i];
-								}
-								gameState.score_save = score;
-								gameState.level_save = level;
-							}
-							SaveGame(gameState, saveFilename);
-							break;
-						}
+						//	if (isSave == true) {
+						//		for (int i = 0; i < height; i++) {
+						//			for (int j = 0; j < width; j++) {
+						//				gameState.field_save[i][j] = field[i][j];
+						//			}
+						//		}
+						//		for (int i = 0; i < 4; i++) {
+						//			gameState.shape1_save[i].x = shape1[i].x;
+						//			gameState.shape1_save[i].y = shape1[i].y;
+						//			gameState.shape2_save[i].x = shape2[i].x;
+						//			gameState.shape2_save[i].y = shape2[i].y;
+						//			gameState.colorOfBlock_save[i] = colorOfBlock[i];
+						//		}
+						//		gameState.score_save = score;
+						//		gameState.level_save = level;
+						//	}
+						//	SaveGame(gameState, saveFilename);
+						//	break;
+						//}
 
 						// Check if user load save game
-						if (button_continue.isPressed() == true) {
-							isContinue = true;
-							if (isContinue == true) {
-								LoadGame(gameState, saveFilename);
-								isStarted = true; // Bắt đầu trò chơi
-							}
+						//if (button_continue.isPressed() == true) {
+						//	isContinue = true;
+						//	if (isContinue == true) {
+						//		LoadGame(gameState, saveFilename);
+						//		isStarted = true; // Bắt đầu trò chơi
+						//	}
 
-						}
+						//}
 
 						// Check if user start game
 						if (button_start.isPressed() == true && isStarted == false) {
 							isStarted = true;
+						}
+						else if (isPause == true) {
+							if (button_ng.isPressed() == true) {
+								isPause = false;
+								score = 0;
+								memset(field, 0, sizeof(field));
+								drawBlock();
+							}
 						}
 						else if (gameOver == true) {
 							// Retry game
@@ -308,6 +319,7 @@ int main(int argc, char* args[])
 						button_unmute.checkEventPress(e);
 						button_hs.checkEventPress(e);
 						button_x.checkEventPress(e);
+						button_ng.checkEventPress(e);
 					case SDL_MOUSEMOTION:
 						button_start.checkEventPress(e);
 						button_continue.checkEventPress(e);
@@ -321,6 +333,7 @@ int main(int argc, char* args[])
 						button_unmute.checkEventPress(e);
 						button_hs.checkEventPress(e);
 						button_x.checkEventPress(e);
+						button_ng.checkEventPress(e);
 					default:
 						break;
 					}
@@ -354,7 +367,7 @@ int main(int argc, char* args[])
 					}
 					else {
 						// Render High Score
-						SDL_Rect desRect2 = createRect(300, 260, 350, 150);
+						SDL_Rect desRect2 = createRect(300, 260, 400, 150);
 						SDL_Texture* texture_hs = getTextureFromText(sdlrender, to_string(hi), "font/VT323-Regular.ttf", 65, fg, bg, 1);
 						int centeredTextureWidth, centeredTextureHeight;
 						SDL_QueryTexture(texture_hs, NULL, NULL, &centeredTextureWidth, &centeredTextureHeight);
@@ -470,9 +483,14 @@ int main(int argc, char* args[])
 
 					if (isPause == true) {
 						button_resume.drawButton(sdlrender);
+						button_ng.drawButton(sdlrender);
 						button_save.drawButton(sdlrender);
 						button_quit.drawButton(sdlrender);
 
+						if (playNewGame == true)
+						{
+
+						}
 					}
 
 					if (gameOver == true) {

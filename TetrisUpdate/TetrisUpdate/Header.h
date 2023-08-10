@@ -10,7 +10,9 @@
 #include <cstdlib>
 #include <random>
 #include <ctime>
-#include<SDL_ttf.h>
+#include <SDL_ttf.h>
+#include <fstream>
+#include <SDL_mixer.h>
 
 using namespace std;
 
