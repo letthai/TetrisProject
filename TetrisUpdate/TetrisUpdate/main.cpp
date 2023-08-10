@@ -28,35 +28,6 @@ struct GameState {
 	int score_save;
 }gameState;
 
-void SaveGame(const GameState& gameState, string filename) {
-	// Open the file for binary write
-	std::ofstream outFile(filename.c_str(), std::ios::binary);
-	if (outFile.is_open()) {
-		// Write the game state struct to the file
-		outFile.write(reinterpret_cast<const char*>(&gameState), sizeof(gameState));
-		outFile.close();
-		cout << "save ok";
-	}
-	else {
-		std::cerr << "Failed to open file for writing." << std::endl;
-	}
-}
-
-// Function to load the game state from a file
-void LoadGame(GameState& gameState, string filename) {
-	// Open the file for binary read
-	std::ifstream inFile(filename.c_str(), std::ios::binary);
-	if (inFile.is_open()) {
-		// Read the game state struct from the file
-		inFile.read(reinterpret_cast<char*>(&gameState), sizeof(gameState));
-		inFile.close();
-		cout << "load ok";
-	}
-	else {
-		std::cerr << "Failed to open file for reading." << std::endl;
-	}
-}
-
 // Check the tetromino inside the play zone or not?
 bool check() {
 	for (int i = 0; i < 4; i++) {
@@ -109,11 +80,32 @@ void drawBlock() {
 //	}
 //}
 
+bool saveGame(const GameState& gameState, const string& filename) {
+	bool savegame;
+	ofstream file(filename, ios::binary);
+	if (file.is_open()) {
+		file.write(reinterpret_cast<const char*>(&gameState), sizeof(gameState));
+		file.close();
+		savegame = true;
+	}
+	else savegame = false;
+	return savegame;
+}
+
+void loadGame(GameState& gameState, const string& filename) {
+	ifstream file(filename, ios::binary || ios::trunc);
+	if (file.is_open()) {
+		file.read(reinterpret_cast<char*>(&gameState), sizeof(gameState));
+		file.close();
+	}
+}
+
 
 int main(int argc, char* args[])
 {
 	srand(time(0));
 	drawBlock();
+	string filename = "savegame.dat";
 
 	Window window("Super Tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	SDL_Renderer* sdlrender = window.getRenderer();
@@ -169,10 +161,9 @@ int main(int argc, char* args[])
 			bool isPause = false;
 			bool isSave = false;
 			int level = 0;
-			bool isContinue = false;
 			bool playSound = true;
 			bool isCheckHs = false;
-			bool playNewGame = false;
+			bool saveSuccess = false;
 
 			SDL_Color fg = { 255, 255, 255 };
 			SDL_Color bg = { 0, 0, 0 };
@@ -226,11 +217,14 @@ int main(int argc, char* args[])
 						button_hs.checkEventPress(e);
 						button_x.checkEventPress(e);
 						button_ng.checkEventPress(e);
+						// Check if user click on quit button
 						if (button_quit.isPressed() == true) isPlaying = false;
 
+						// Check if user click on high scire button
 						if (button_hs.isPressed() == true) isCheckHs = true;
 						else if (button_x.isPressed() == true) isCheckHs = false;
 
+						// Check user turn on or off music
 						if (button_unmute.isPressed() == true && playSound == true) playSound = false;
 						else if (button_mute.isPressed() == true) {
 							if (playSound == false) playSound = true;
@@ -243,51 +237,67 @@ int main(int argc, char* args[])
 						}
 
 						// Check if user save game
-						//if (button_save.isPressed() == true) {
-						//	isSave = true;
-
-						//	if (isSave == true) {
-						//		for (int i = 0; i < height; i++) {
-						//			for (int j = 0; j < width; j++) {
-						//				gameState.field_save[i][j] = field[i][j];
-						//			}
-						//		}
-						//		for (int i = 0; i < 4; i++) {
-						//			gameState.shape1_save[i].x = shape1[i].x;
-						//			gameState.shape1_save[i].y = shape1[i].y;
-						//			gameState.shape2_save[i].x = shape2[i].x;
-						//			gameState.shape2_save[i].y = shape2[i].y;
-						//			gameState.colorOfBlock_save[i] = colorOfBlock[i];
-						//		}
-						//		gameState.score_save = score;
-						//		gameState.level_save = level;
-						//	}
-						//	SaveGame(gameState, saveFilename);
-						//	break;
-						//}
-
-						// Check if user load save game
-						//if (button_continue.isPressed() == true) {
-						//	isContinue = true;
-						//	if (isContinue == true) {
-						//		LoadGame(gameState, saveFilename);
-						//		isStarted = true; // Bắt đầu trò chơi
-						//	}
-
-						//}
+						if (button_save.isPressed() == true) {
+							for (int i = 0; i < height; i++) {
+								for (int j = 0; j < width; j++) {
+									gameState.field_save[i][j] = field[i][j];
+								}
+							}
+							for (int i = 0; i < 4; i++) {
+								gameState.shape1_save[i].x = shape1[i].x;
+								gameState.shape1_save[i].y = shape1[i].y;
+								gameState.shape2_save[i].x = shape2[i].x;
+								gameState.shape2_save[i].y = shape2[i].y;
+								gameState.colorOfBlock_save[i] = colorOfBlock[i];
+							}
+							gameState.score_save = score;
+							gameState.level_save = level;
+							saveSuccess = saveGame(gameState, filename);
+						}
 
 						// Check if user start game
 						if (button_start.isPressed() == true && isStarted == false) {
 							isStarted = true;
 						}
+						// If user continue game, load game from file and continue
+						else if (button_continue.isPressed() == true && isStarted == false) {
+							loadGame(gameState, filename);
+							for (int i = 0; i < height; i++) {
+								for (int j = 0; j < width; j++) {
+									field[i][j] = gameState.field_save[i][j];
+								}
+							}
+							for (int i = 0; i < 4; i++) {
+								shape1[i].x = gameState.shape1_save[i].x;
+								shape1[i].y =gameState.shape1_save[i].y;
+								shape2[i].x	= gameState.shape2_save[i].x;
+								shape2[i].y	= gameState.shape2_save[i].y;
+								colorOfBlock[i] = gameState.colorOfBlock_save[i];
+							}
+							score = gameState.score_save;
+							level = gameState.level_save;
+							button_continue.setPressed(false);
+							isStarted = true;
+						}
+						// If user want to play a new game
 						else if (isPause == true) {
 							if (button_ng.isPressed() == true) {
 								isPause = false;
+								isStarted = true;
+								score = 0;
+								memset(field, 0, sizeof(field));
+								drawBlock();
+							}
+							else if (button_save.isPressed() == true) {
+								isPause = false;
+								isStarted = false;
+								isCheckHs = false;
 								score = 0;
 								memset(field, 0, sizeof(field));
 								drawBlock();
 							}
 						}
+						// If game over, user can play a new game or not
 						else if (gameOver == true) {
 							// Retry game
 							if (button_retry.isPressed() == true) {
@@ -359,13 +369,11 @@ int main(int argc, char* args[])
 				SDL_RenderCopy(sdlrender, window.getTetrisFrame(), NULL, &desRect1);
 				
 				if (isStarted == false) {
-					if (isCheckHs == false) {
 						button_start.drawButton(sdlrender);
 						button_continue.drawButton(sdlrender);
 						button_hs.drawButton(sdlrender);
 						button_quit.drawButton(sdlrender);
-					}
-					else {
+						if (isCheckHs == true) {
 						// Render High Score
 						SDL_Rect desRect2 = createRect(300, 260, 400, 150);
 						SDL_Texture* texture_hs = getTextureFromText(sdlrender, to_string(hi), "font/VT323-Regular.ttf", 65, fg, bg, 1);
@@ -486,11 +494,6 @@ int main(int argc, char* args[])
 						button_ng.drawButton(sdlrender);
 						button_save.drawButton(sdlrender);
 						button_quit.drawButton(sdlrender);
-
-						if (playNewGame == true)
-						{
-
-						}
 					}
 
 					if (gameOver == true) {
@@ -509,7 +512,6 @@ int main(int argc, char* args[])
 			}
 		}
 	}
-
 	// Clear data
 	window.cleanUp();
 
