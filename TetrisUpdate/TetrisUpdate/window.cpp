@@ -35,12 +35,9 @@ SDL_Texture* Window::getTetrisFrame() const {
 	return tetris_frame;
 }
 
-TTF_Font* Window::getFont() const {
-	return font;
-}
-
 bool Window::init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) return false;
+	if (TTF_Init() < 0) return false;
 
 	if (tetris_window == NULL) return false;
 	if (tetris_renderer == NULL) return false;

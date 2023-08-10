@@ -21,7 +21,6 @@ public:
 
 	bool init();
 	void cleanUp();
-	SDL_Texture* createFont();
 
 private:
 	SDL_Window* tetris_window = NULL;
@@ -29,7 +28,6 @@ private:
 	SDL_Surface* tetris_screen = NULL;
 	SDL_Texture* tetris_background = NULL;
 	SDL_Texture* tetris_frame = NULL;
-	TTF_Font* font = NULL;
 };
 
 #endif // !WINDOW_H
