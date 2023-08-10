@@ -4,9 +4,11 @@
 #include "Header.h"
 
 // Xu ly texture
+void drawTextureBlock(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y);
 void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y);
-void applyTexture(SDL_Renderer* renderer, SDL_Texture* texture, string filepath);
 SDL_Texture* loadTexture(SDL_Renderer* renderer, string path);
+SDL_Texture* getTextureFromText(SDL_Renderer* render, string text, string filepath, int size, SDL_Color fg,
+	SDL_Color bg, int type);
 
 // Xu ly Surface
 SDL_Surface* loadSurface(SDL_Surface* screen, string path);

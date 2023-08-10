@@ -1,12 +1,5 @@
 #include "handlemedia.h"
 
-void applyTexture(SDL_Renderer* renderer, SDL_Texture* texture, string filepath) {
-	texture = loadTexture(renderer, filepath);
-	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, texture, NULL, NULL);
-	SDL_RenderPresent(renderer);
-}
-
 void moveRect(SDL_Rect& rect, int x, int y) {
 	rect.x += x;
 	rect.y += y;
@@ -21,9 +14,14 @@ SDL_Rect createRect(int x, int y, int w, int h) {
 	return rect;
 }
 
-void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y) {
+void drawTextureBlock(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y) {
 	SDL_Rect destRect = { x, y, SQUARE_SIZE, SQUARE_SIZE };
 	moveRect(destRect, 341, 13);
+	SDL_RenderCopy(renderer, texture, NULL, &destRect);
+}
+
+void drawTexture(SDL_Renderer* renderer, SDL_Texture* texture, int x, int y) {
+	SDL_Rect destRect = { x, y, SQUARE_SIZE, SQUARE_SIZE };
 	SDL_RenderCopy(renderer, texture, NULL, &destRect);
 }
 
@@ -126,4 +124,26 @@ void converTextToTexture(SDL_Renderer* render ,string text, string filepath, int
 	SDL_Rect desRect = createRect(x2, y2, w, h);
 
 	SDL_RenderCopy(render, texture, &srcRest, &desRect);
+}
+
+SDL_Texture* getTextureFromText(SDL_Renderer* render, string text, string filepath, int size, SDL_Color fg,
+	SDL_Color bg, int type) {
+	SDL_Surface* surface = NULL;
+	SDL_Texture* texture = NULL;
+	TTF_Font* font = TTF_OpenFont(filepath.c_str(), size);
+
+	switch (type)
+	{
+	case 1:
+		surface = TTF_RenderText_Shaded(font, text.c_str(), fg, bg);
+	case 2:
+		surface = TTF_RenderText_Solid(font, text.c_str(), fg);
+	case 3:
+		surface = TTF_RenderText_Blended(font, text.c_str(), fg);
+	default:
+		break;
+	}
+
+	texture = SDL_CreateTextureFromSurface(render, surface);
+	return texture;
 }
