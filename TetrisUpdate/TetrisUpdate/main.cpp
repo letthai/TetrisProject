@@ -129,14 +129,16 @@ int main(int argc, char* args[])
 
 	Button button_start(sdlrender, "image/button/play_1.png", "image/button/play_2.png", 426, 175, 150, 70);
 	Button button_continue(sdlrender, "image/button/continue_1.png", "image/button/continue_2.png", 426, 265, 150, 70);
-	Button button_quit(sdlrender, "image/button/quit_1.png", "image/button/quit_2.png", 426, 355, 150, 70);
+	Button button_quit(sdlrender, "image/button/quit_1.png", "image/button/quit_2.png", 426, 445, 150, 70);
 	Button button_retry(sdlrender, "image/button/retry_1.png", "image/button/retry.png", 50, 124, 40, 40);
 	Button button_mainsc(sdlrender, "image/button/x_1.png", "image/button/x_2.png", 115, 124, 40, 40);
 	Button button_pause(sdlrender, "image/button/pause_1.png", "image/button/pause_2.png", 900, 10, 40, 40);
+	Button button_hs(sdlrender, "image/button/hs_1.png", "image/button/hs_2.png", 426, 355, 150, 70);
 	Button button_resume(sdlrender, "image/button/resume_1.png", "image/button/resume_2.png", 426, 175, 150, 70);
 	Button button_save(sdlrender, "image/button/save_1.png", "image/button/save_2.png", 426, 265, 150, 70);
 	Button button_mute(sdlrender, "image/button/mute.png", "image/button/mute.png", 950, 10, 40, 40);
 	Button button_unmute(sdlrender, "image/button/unmute_1.png", "image/button/unmute_1.png", 950, 10, 40, 40);
+	Button button_x(sdlrender, "image/button/x_1.png", "image/button/x_2.png", 680, 235, 50, 50);
 
 	int hi = 0;
 	bool flags = true;
@@ -168,6 +170,7 @@ int main(int argc, char* args[])
 			int level = 0;
 			bool isContinue = false;
 			bool playSound = true;
+			bool isCheckHs = false;
 
 			SDL_Color fg = { 255, 255, 255 };
 			SDL_Color bg = { 0, 0, 0 };
@@ -218,7 +221,12 @@ int main(int argc, char* args[])
 						button_save.checkEventPress(e);
 						button_mute.checkEventPress(e);
 						button_unmute.checkEventPress(e);
+						button_hs.checkEventPress(e);
+						button_x.checkEventPress(e);
 						if (button_quit.isPressed() == true) isPlaying = false;
+
+						if (button_hs.isPressed() == true) isCheckHs = true;
+						else if (button_x.isPressed() == true) isCheckHs = false;
 
 						if (button_unmute.isPressed() == true && playSound == true) playSound = false;
 						else if (button_mute.isPressed() == true) {
@@ -250,7 +258,6 @@ int main(int argc, char* args[])
 								}
 								gameState.score_save = score;
 								gameState.level_save = level;
-	
 							}
 							SaveGame(gameState, saveFilename);
 							break;
@@ -299,6 +306,8 @@ int main(int argc, char* args[])
 						button_save.checkEventPress(e);
 						button_mute.checkEventPress(e);
 						button_unmute.checkEventPress(e);
+						button_hs.checkEventPress(e);
+						button_x.checkEventPress(e);
 					case SDL_MOUSEMOTION:
 						button_start.checkEventPress(e);
 						button_continue.checkEventPress(e);
@@ -310,6 +319,8 @@ int main(int argc, char* args[])
 						button_save.checkEventPress(e);
 						button_mute.checkEventPress(e);
 						button_unmute.checkEventPress(e);
+						button_hs.checkEventPress(e);
+						button_x.checkEventPress(e);
 					default:
 						break;
 					}
@@ -329,11 +340,35 @@ int main(int argc, char* args[])
 					button_mute.drawButton(sdlrender);
 					Mix_VolumeChunk(window.getSound(), 0);
 				}
+
+				//Render frame
+				SDL_Rect desRect1 = createRect(223, 0, 555, 667);
+				SDL_RenderCopy(sdlrender, window.getTetrisFrame(), NULL, &desRect1);
 				
 				if (isStarted == false) {
-					button_start.drawButton(sdlrender);
-					button_continue.drawButton(sdlrender);
-					button_quit.drawButton(sdlrender);
+					if (isCheckHs == false) {
+						button_start.drawButton(sdlrender);
+						button_continue.drawButton(sdlrender);
+						button_hs.drawButton(sdlrender);
+						button_quit.drawButton(sdlrender);
+					}
+					else {
+						// Render High Score
+						SDL_Rect desRect2 = createRect(300, 260, 350, 150);
+						SDL_Texture* texture_hs = getTextureFromText(sdlrender, to_string(hi), "font/VT323-Regular.ttf", 65, fg, bg, 1);
+						int centeredTextureWidth, centeredTextureHeight;
+						SDL_QueryTexture(texture_hs, NULL, NULL, &centeredTextureWidth, &centeredTextureHeight);
+
+						SDL_Rect destinationRect;
+						destinationRect.x = 300 + (400 - centeredTextureWidth) / 2;
+						destinationRect.y = 260 + (150 - centeredTextureHeight) / 2;
+						destinationRect.w = centeredTextureWidth;
+						destinationRect.h = centeredTextureHeight;
+
+						SDL_RenderCopy(sdlrender, window.getTable(), NULL, &desRect2);
+						button_x.drawButton(sdlrender);
+						SDL_RenderCopy(sdlrender, texture_hs, NULL, &destinationRect);
+					}
 				}
 				else {
 					if (!gameOver) {
@@ -423,14 +458,14 @@ int main(int argc, char* args[])
 						for (int j = 0; j < width; j++) {
 							if (field[i][j] == 0) continue;
 							else {
-								drawTexture(sdlrender, list_texture[field[i][j] - 1], j * SQUARE_SIZE, i * SQUARE_SIZE);
+								drawTextureBlock(sdlrender, list_texture[field[i][j] - 1], j * SQUARE_SIZE, i * SQUARE_SIZE);
 							}
 						}
 					}
 
 					// Render the tetromino when it is running down
 					for (int i = 0; i < 4; i++) {
-						drawTexture(sdlrender, list_texture[colorOfBlock[i]], shape1[i].x * SQUARE_SIZE, shape1[i].y * SQUARE_SIZE);
+						drawTextureBlock(sdlrender, list_texture[colorOfBlock[i]], shape1[i].x * SQUARE_SIZE, shape1[i].y * SQUARE_SIZE);
 					}
 
 					if (isPause == true) {
@@ -446,17 +481,10 @@ int main(int argc, char* args[])
 						button_retry.drawButton(sdlrender);
 						button_mainsc.drawButton(sdlrender);
 						converTextToTexture(sdlrender, "GAME OVER", "font/VT323-Regular.ttf", 90, fg, bg, 1, 0, 0, 337, 270);
-
-						// In ra high score
-						converTextToTexture(sdlrender, to_string(hi), "font/VT323-Regular.ttf", 65, fg, bg, 1, 0, 0, 785, 200);
 					}
 
 					converTextToTexture(sdlrender, to_string(score), "font/VT323-Regular.ttf", 65, fg, bg, 1, 0, 0, 765, 115);
 				}
-
-				//Render frame
-				SDL_Rect desRect1 = createRect(223, 0, 555, 667);
-				SDL_RenderCopy(sdlrender, window.getTetrisFrame(), NULL, &desRect1);
 
 				// Update the screen
 				SDL_RenderPresent(sdlrender);
