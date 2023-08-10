@@ -35,9 +35,25 @@ SDL_Texture* Window::getTetrisFrame() const {
 	return tetris_frame;
 }
 
+Mix_Chunk* Window::getSound() const {
+	return sound;
+}
+
 bool Window::init() {
 	if (SDL_Init(SDL_INIT_VIDEO) < 0) return false;
 	if (TTF_Init() < 0) return false;
+
+	if (SDL_Init(SDL_INIT_AUDIO) < 0) {
+		SDL_Log("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
+		return false;
+	}
+
+	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0) {
+		SDL_Log("SDL_mixer could not initialize! SDL_mixer Error: %s\n", Mix_GetError());
+		return false;
+	}
+
+	sound = Mix_LoadWAV("sound/sound.wav");
 
 	if (tetris_window == NULL) return false;
 	if (tetris_renderer == NULL) return false;
@@ -57,6 +73,7 @@ bool Window::init() {
 
 void Window::cleanUp() {
 	// Thoat khoi SDL
+	Mix_CloseAudio();
 	IMG_Quit();
 	SDL_Quit();
 	TTF_Quit();
