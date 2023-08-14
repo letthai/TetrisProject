@@ -147,3 +147,27 @@ SDL_Texture* getTextureFromText(SDL_Renderer* render, string text, string filepa
 	texture = SDL_CreateTextureFromSurface(render, surface);
 	return texture;
 }
+
+int readFile(string filepath) {
+	int hi;
+	ifstream file;
+	file.open(filepath, ios::in);
+	if (!file.is_open()) {
+		cout << "Error";
+	}
+	else {
+		file >> hi;
+	}
+	file.close();
+	return hi;
+}
+
+void exportFile(string filepath, int hi) {
+	ofstream outFile;
+	outFile.open(filepath, ofstream::out | ofstream::trunc);
+	if (!outFile) {
+		std::cerr << "Can't open file!" << std::endl;
+	}
+	outFile << hi << endl;
+	outFile.close();
+}

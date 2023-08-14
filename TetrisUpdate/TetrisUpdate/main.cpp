@@ -17,8 +17,6 @@ shape2[4];
 
 int colorOfBlock[4];
 
-const string saveFilename = "save_game.bin";
-
 struct GameState {
 	int field_save[height][width];
 	int colorOfBlock_save[4];
@@ -51,34 +49,121 @@ void drawBlock() {
 	}
 }
 
-//int countNumberOfSameBlock(Position shape);
-//
-//int countNumberOfSameBlock(Position shape) {
-//	int count = 0;
-//	if (field[shape.y][shape.x]){
-//		if (field[shape.y][shape.x] == field[shape.y - 1][shape.x]) {
-//			count++;
-//			if (field[shape.y - 1][shape.x] == field[shape.y - 2][shape.x]) count++;
-//			if (field[shape.y - 1][shape.x] == field[shape.y - 1][shape.x - 1]) count++;
-//			if (field[shape.y - 1][shape.x] == field[shape.y - 1][shape.x + 1]) count++;
+void floodFill(Position block, int color, int& count) {
+	if (block.x < 0 || block.x >= width || block.y < 0 || block.y >= height) {
+		return;
+	}
+	if (field[block.y][block.x] != color) {
+		return;
+	}
+	field[block.y][block.x] = 0;
+	count++;
+	floodFill({ block.x - 1, block.y }, color,  count);
+	floodFill({ block.x + 1, block.y }, color, count);
+	floodFill({ block.x, block.y - 1 }, color,  count);
+	floodFill({ block.x, block.y + 1 }, color,  count);
+}
+
+//void checkAndDeleteBlocks(Position& block) {
+//	vector<Position> blocksToDelete;
+//	int color = field[block.y][block.x];
+//	floodFill(block, color, blocksToDelete);
+//	// delete blocks and update location of blocks above
+//	for (int i = 0; i < blocksToDelete.size(); i++) {
+//		int x = blocksToDelete[i].x;
+//		int y = blocksToDelete[i].y;
+//		for (int j = y - 1; j >= 0; j--) {
+//			if (field[j][x] != 0) {
+//				field[j + 1][x] = field[j][x];
+//				field[j][x] = 0;
+//			}
 //		}
-//		if (field[shape.y][shape.x] == field[shape.y + 1][shape.x]) {
-//			count++;
-//			if (field[shape.y + 1][shape.x] == field[shape.y + 2][shape.x]) count++;
-//			if (field[shape.y + 1][shape.x] == field[shape.y + 1][shape.x - 1]) count++;
-//			if (field[shape.y + 1][shape.x] == field[shape.y + 1][shape.x + 1]) count++;
+//		// adjust block vector to reflect new block positions
+//		for (int k = i + 1; k < blocksToDelete.size(); j++) {
+//			if (blocksToDelete[j].x == x && blocksToDelete[j].y < y) {
+//				blocksToDelete[j].y++;
+//			}
 //		}
-//		if (field[shape.y][shape.x] == field[shape.y][shape.x + 1]) {
-//			count++;
-//			if (field[shape.y][shape.x + 1] == field[shape.y][shape.x + 2]) count++;
-// 		}
-//		if (field[shape.y][shape.x] == field[shape.y][shape.x - 1]) {
-//			count++;
-//			if (field[shape.y][shape.x - 1] == field[shape.y][shape.x - 2]) count++;
-//		}
-//		return count;
 //	}
 //}
+
+
+void countNumberOfSameBlock(Position shape);
+
+void countNumberOfSameBlock(Position shape) {
+	vector<int> checky;
+	vector<int> checkx;
+	int count = 0;
+	if (field[shape.y][shape.x]){
+		checky.push_back(shape.y);
+		checkx.push_back(shape.x);
+		if (field[shape.y][shape.x] == field[shape.y - 1][shape.x]) {
+			count++;
+			checky.push_back(shape.y - 1);
+			checkx.push_back(shape.x);
+			if (field[shape.y - 1][shape.x] == field[shape.y - 2][shape.x]) {
+				count++;
+				checky.push_back(shape.y - 2);
+				checkx.push_back(shape.x);
+			}
+			if (field[shape.y - 1][shape.x] == field[shape.y - 1][shape.x - 1]) {
+				count++;
+				checky.push_back(shape.y - 1);
+				checkx.push_back(shape.x - 1);
+			}
+			if (field[shape.y - 1][shape.x] == field[shape.y - 1][shape.x + 1]) {
+				count++;
+				checky.push_back(shape.y - 1);
+				checkx.push_back(shape.x + 1);
+			}
+		}
+		if (field[shape.y][shape.x] == field[shape.y + 1][shape.x]) {
+			count++;
+			checky.push_back(shape.y + 1);
+			checkx.push_back(shape.x);
+			if (field[shape.y + 1][shape.x] == field[shape.y + 2][shape.x]) {
+				count++;
+				checky.push_back(shape.y + 2);
+				checkx.push_back(shape.x);
+			}
+			if (field[shape.y + 1][shape.x] == field[shape.y + 1][shape.x - 1]) {
+				count++;
+				checky.push_back(shape.y + 1);
+				checkx.push_back(shape.x - 1);
+			}
+			if (field[shape.y + 1][shape.x] == field[shape.y + 1][shape.x + 1]) {
+				count++;
+				checky.push_back(shape.y + 1);
+				checkx.push_back(shape.x + 1);
+			}
+		}
+		if (field[shape.y][shape.x] == field[shape.y][shape.x + 1]) {
+			count++;
+			checky.push_back(shape.y);
+			checkx.push_back(shape.x + 1);
+			if (field[shape.y][shape.x + 1] == field[shape.y][shape.x + 2]) {
+				count++;
+				checky.push_back(shape.y);
+				checkx.push_back(shape.x + 2);
+			}
+ 		}
+		if (field[shape.y][shape.x] == field[shape.y][shape.x - 1]) {
+			count++;
+			checky.push_back(shape.y);
+			checkx.push_back(shape.x - 1);
+			if (field[shape.y][shape.x - 1] == field[shape.y][shape.x - 2]) {
+				count++;
+				checky.push_back(shape.y);
+				checkx.push_back(shape.x - 2);
+			}
+		}
+	}
+	if (count >= 2) {
+		for (int i = 0; i < checkx.size(); i++) {
+			field[checky[i]][checkx[i]] = 0;
+		}
+	}
+}
 
 bool saveGame(const GameState& gameState, const string& filename) {
 	bool savegame;
@@ -100,12 +185,13 @@ void loadGame(GameState& gameState, const string& filename) {
 	}
 }
 
-
 int main(int argc, char* args[])
 {
 	srand(time(0));
-	drawBlock();
-	string filename = "savegame.dat";
+	drawBlock(); // Draw first tetromino when start game
+	string fileName = "savegame.dat";
+	string fileHighScore = "highscore.txt";
+	int hi = readFile(fileHighScore); 	// Get high score
 
 	Window window("Super Tetris", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
 	SDL_Renderer* sdlrender = window.getRenderer();
@@ -118,7 +204,7 @@ int main(int argc, char* args[])
 		loadTexture(sdlrender, "image/block/planet_5.png"),
 		loadTexture(sdlrender, "image/block/planet_6.png"), 
 	};
-
+	// Create button
 	Button button_start(sdlrender, "image/button/play_1.png", "image/button/play_2.png", 426, 175, 150, 70);
 	Button button_continue(sdlrender, "image/button/continue_1.png", "image/button/continue_2.png", 426, 265, 150, 70);
 	Button button_quit(sdlrender, "image/button/quit_1.png", "image/button/quit_2.png", 426, 445, 150, 70);
@@ -133,7 +219,6 @@ int main(int argc, char* args[])
 	Button button_unmute(sdlrender, "image/button/unmute_1.png", "image/button/unmute_1.png", 950, 10, 40, 40);
 	Button button_x(sdlrender, "image/button/x_1.png", "image/button/x_2.png", 680, 235, 50, 50);
 
-	int hi = 0;
 	bool flags = true;
 	if (!window.init())
 	{
@@ -155,7 +240,7 @@ int main(int argc, char* args[])
 			int delta = 0;
 			bool isRotate = false;
 			bool gameOver = false;
-			int delay = 300;
+			int delay = 50;
 			Uint32 startTime = 0;
 			int countBlocks = 0;
 			bool isPause = false;
@@ -168,8 +253,6 @@ int main(int argc, char* args[])
 			SDL_Color fg = { 255, 255, 255 };
 			SDL_Color bg = { 0, 0, 0 };
 
-			// Render background
-			SDL_RenderCopy(sdlrender, window.getTetrisBackground(), NULL, NULL);
 			//While application is running
 			while (isPlaying)
 			{
@@ -252,7 +335,7 @@ int main(int argc, char* args[])
 							}
 							gameState.score_save = score;
 							gameState.level_save = level;
-							saveSuccess = saveGame(gameState, filename);
+							saveSuccess = saveGame(gameState, fileName);
 						}
 
 						// Check if user start game
@@ -261,7 +344,7 @@ int main(int argc, char* args[])
 						}
 						// If user continue game, load game from file and continue
 						else if (button_continue.isPressed() == true && isStarted == false) {
-							loadGame(gameState, filename);
+							loadGame(gameState, fileName);
 							for (int i = 0; i < height; i++) {
 								for (int j = 0; j < width; j++) {
 									field[i][j] = gameState.field_save[i][j];
@@ -437,10 +520,17 @@ int main(int argc, char* args[])
 											shape2[i].y -= (shape2[i].y - topLimit);
 										}
 									}
+
+									// Set value for field[i][j] when the tetromino reach the area have block.
 									for (int i = 0; i < 4; i++) {
 										field[shape2[i].y][shape2[i].x] = 1 + colorOfBlock[i];
 									}
-									drawBlock();
+
+									for (int i = 0; i < 4; i++) {
+										countNumberOfSameBlock(shape2[i]);
+									}
+
+									drawBlock(); // Create new tetromino.
 								}
 								startTime = currentTime;
 							}
@@ -467,6 +557,8 @@ int main(int argc, char* args[])
 								score += 100;
 							}
 						}
+
+						
 					}
 
 					delta = 0;
@@ -496,8 +588,12 @@ int main(int argc, char* args[])
 						button_quit.drawButton(sdlrender);
 					}
 
-					if (gameOver == true) {
-						if (score >= hi) hi = score;
+					if (gameOver) {
+						if (score >= hi) {
+							hi = score;
+							exportFile(fileHighScore, hi);
+						}
+
 						converTextToTexture(sdlrender, "Retry?", "font/VT323-Regular.ttf", 50, fg, bg, 1, 0, 0, 50, 70);
 						button_retry.drawButton(sdlrender);
 						button_mainsc.drawButton(sdlrender);

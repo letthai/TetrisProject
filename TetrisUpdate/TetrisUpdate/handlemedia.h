@@ -21,5 +21,10 @@ SDL_Rect createRect(int x, int y, int w, int h);
 // Xu ly text
 void converTextToTexture(SDL_Renderer* render, string text, string filepath, int size,
 								SDL_Color fg, SDL_Color bg, int type, int x1, int y1, int x2, int y2);
+
+// Doc, xuat file
+int readFile(string filepath);
+
+void exportFile(string filepath, int hi);
 #endif // !HANDLE_MEDIA_H_
 
