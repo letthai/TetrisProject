@@ -240,48 +240,48 @@ int main(int argc, char* args[])
 						button_med.checkEventPress(e);
 						button_hard.checkEventPress(e);
 						// Check if user click on quit button
-						if (button_quit.isPressed() == true) isPlaying = false;
+						if (button_quit.isPressed()) isPlaying = false;
 
 						// Check if user choose level
-						if (button_level.isPressed() == true) changeLevel = true;
-						else if (button_easy.isPressed() == true) {
+						if (button_level.isPressed()) changeLevel = true;
+						else if (button_easy.isPressed()) {
 							delay = 300;
 							backup = delay;
-							if(changeLevel == true)
+							if(changeLevel)
 							changeLevel = false;
 						}
-						else if (button_med.isPressed() == true)
+						else if (button_med.isPressed())
 						{
 							delay = 100;
 							backup = delay;
-							if (changeLevel == true)
+							if (changeLevel)
 							changeLevel = false;
 						}
-						else if (button_hard.isPressed() == true) {
+						else if (button_hard.isPressed()) {
 							delay = 50;
 							backup = delay;
-							if (changeLevel == true)
+							if (changeLevel)
 							changeLevel = false;
 						}
 
 						// Check if user click on high scire button
-						if (button_hs.isPressed() == true) isCheckHs = true;
-						else if (button_x.isPressed() == true) isCheckHs = false;
+						if (button_hs.isPressed()) isCheckHs = true;
+						else if (button_x.isPressed()) isCheckHs = false;
 
 						// Check user turn on or off music
-						if (button_unmute.isPressed() == true && playSound == true) playSound = false;
+						if (button_unmute.isPressed() && playSound) playSound = false;
 						else if (button_mute.isPressed() == true) {
-							if (playSound == false) playSound = true;
+							if (!playSound) playSound = true;
 						}
 
 						// Check pause or resume game
-						if (button_pause.isPressed() == true && isPause == false) isPause = true;
-						else if (button_resume.isPressed() == true) {
-							if (isPause == true) isPause = false;
+						if (button_pause.isPressed() && !isPause) isPause = true;
+						else if (button_resume.isPressed()) {
+							if (isPause) isPause = false;
 						}
 
 						// Check if user save game
-						if (button_save.isPressed() == true) {
+						if (button_save.isPressed()) {
 							for (int i = 0; i < height; i++) {
 								for (int j = 0; j < width; j++) {
 									gameState.field_save[i][j] = field[i][j];
@@ -300,11 +300,11 @@ int main(int argc, char* args[])
 						}
 
 						// Check if user start game
-						if (button_start.isPressed() == true && isStarted == false) {
+						if (button_start.isPressed() && !isStarted) {
 							isStarted = true;
 						}
 						// If user continue game, load game from file and continue
-						else if (button_continue.isPressed() == true && isStarted == false) {
+						else if (button_continue.isPressed() && !isStarted) {
 							loadGame(gameState, fileName);
 							for (int i = 0; i < height; i++) {
 								for (int j = 0; j < width; j++) {
@@ -324,15 +324,15 @@ int main(int argc, char* args[])
 							isStarted = true;
 						}
 						// If user want to play a new game
-						else if (isPause == true) {
-							if (button_ng.isPressed() == true) {
+						else if (isPause) {
+							if (button_ng.isPressed()) {
 								isPause = false;
 								isStarted = true;
 								score = 0;
 								memset(field, 0, sizeof(field));
 								drawBlock();
 							}
-							else if (button_save.isPressed() == true) {
+							else if (button_save.isPressed()) {
 								isPause = false;
 								isStarted = false;
 								isCheckHs = false;
@@ -342,9 +342,9 @@ int main(int argc, char* args[])
 							}
 						}
 						// If game over, user can play a new game or not
-						else if (gameOver == true) {
+						else if (gameOver) {
 							// Retry game
-							if (button_retry.isPressed() == true) {
+							if (button_retry.isPressed()) {
 								gameOver = false;
 								isStarted = true;
 								score = 0;
@@ -352,7 +352,7 @@ int main(int argc, char* args[])
 								drawBlock();
 							}
 							// Back to main screen
-							else if (button_mainsc.isPressed() == true) {
+							else if (button_mainsc.isPressed()) {
 								gameOver = false;
 								isStarted = false;
 								score = 0;
@@ -420,24 +420,27 @@ int main(int argc, char* args[])
 				SDL_Rect desRect1 = createRect(223, 0, 555, 667);
 				SDL_RenderCopy(sdlrender, window.getTetrisFrame(), NULL, &desRect1);
 				
-				if (isStarted == false) {
+				if (!isStarted) {
 					button_start.drawButton(sdlrender);
 					button_continue.drawButton(sdlrender);
 					button_hs.drawButton(sdlrender);
 					button_quit.drawButton(sdlrender);
 					button_level.drawButton(sdlrender);
-					if (changeLevel == true) {
+					// Check if user click change lv button
+					if (changeLevel) {
 						button_easy.drawButton(sdlrender);
 						button_med.drawButton(sdlrender);
 						button_hard.drawButton(sdlrender);
 					}
-					if (isCheckHs == true) {
+					// Check if user click hs button
+					if (isCheckHs) {
 						// Render High Score
 						SDL_Rect desRect2 = createRect(300, 260, 400, 150);
 						SDL_Texture* texture_hs = getTextureFromText(sdlrender, to_string(hi), "font/VT323-Regular.ttf", 65, fg, bg, 1);
 						int centeredTextureWidth, centeredTextureHeight;
 						SDL_QueryTexture(texture_hs, NULL, NULL, &centeredTextureWidth, &centeredTextureHeight);
 
+						// Render hs in the middle
 						SDL_Rect destinationRect;
 						destinationRect.x = 300 + (400 - centeredTextureWidth) / 2;
 						destinationRect.y = 260 + (150 - centeredTextureHeight) / 2;
@@ -451,7 +454,7 @@ int main(int argc, char* args[])
 				}
 				else {
 					if (!gameOver) {
-						if (isPause == false) button_pause.drawButton(sdlrender);
+						if (!isPause) button_pause.drawButton(sdlrender);
 						
 						// Move tetromino to the left or right
 						for (int i = 0; i < 4; i++) {
@@ -475,7 +478,7 @@ int main(int argc, char* args[])
 						}
 
 						// Run down the tetromino faster and create new tetromino
-						if(isPause == false) {
+						if(!isPause) {
 							if (currentTime - startTime > delay) {
 								for (int i = 0; i < 4; i++) {
 									shape2[i] = shape1[i];
@@ -536,6 +539,7 @@ int main(int argc, char* args[])
 						
 					}
 
+					// Reset variable for new tetromino;
 					delta = 0;
 					isRotate = false;
 					delay = backup;
@@ -556,7 +560,7 @@ int main(int argc, char* args[])
 						drawTextureBlock(sdlrender, list_texture[colorOfBlock[i]], shape1[i].x * SQUARE_SIZE, shape1[i].y * SQUARE_SIZE);
 					}
 
-					if (isPause == true) {
+					if (isPause) {
 						button_resume.drawButton(sdlrender);
 						button_ng.drawButton(sdlrender);
 						button_save.drawButton(sdlrender);
@@ -564,6 +568,7 @@ int main(int argc, char* args[])
 					}
 
 					if (gameOver) {
+						// Compare score when game over with highscore
 						if (score >= hi) {
 							hi = score;
 							exportFile(fileHighScore, hi);
