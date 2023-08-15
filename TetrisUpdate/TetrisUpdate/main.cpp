@@ -17,6 +17,8 @@ shape2[4];
 
 int colorOfBlock[4];
 
+bool visited[20][10];
+
 struct GameState {
 	int field_save[height][width];
 	int colorOfBlock_save[4];
@@ -49,118 +51,44 @@ void drawBlock() {
 	}
 }
 
-void floodFill(Position block, int color, int& count) {
-	if (block.x < 0 || block.x >= width || block.y < 0 || block.y >= height) {
+void floodFill(Position block, int color, int& count, vector<Position>& group) {
+	if (block.x < 0 || block.x >= 10 || block.y < 0 || block.y >= 20) {
+		return;
+	}
+	if (visited[block.y][block.x]) {
 		return;
 	}
 	if (field[block.y][block.x] != color) {
 		return;
 	}
-	field[block.y][block.x] = 0;
+	visited[block.y][block.x] = true;
+	group.push_back(block);
 	count++;
-	floodFill({ block.x - 1, block.y }, color,  count);
-	floodFill({ block.x + 1, block.y }, color, count);
-	floodFill({ block.x, block.y - 1 }, color,  count);
-	floodFill({ block.x, block.y + 1 }, color,  count);
+	floodFill({ block.x - 1, block.y }, color, count, group);
+	floodFill({ block.x + 1, block.y }, color, count, group);
+	floodFill({ block.x, block.y - 1 }, color, count, group);
+	floodFill({ block.x, block.y + 1 }, color, count, group);
 }
 
-//void checkAndDeleteBlocks(Position& block) {
-//	vector<Position> blocksToDelete;
-//	int color = field[block.y][block.x];
-//	floodFill(block, color, blocksToDelete);
-//	// delete blocks and update location of blocks above
-//	for (int i = 0; i < blocksToDelete.size(); i++) {
-//		int x = blocksToDelete[i].x;
-//		int y = blocksToDelete[i].y;
-//		for (int j = y - 1; j >= 0; j--) {
-//			if (field[j][x] != 0) {
-//				field[j + 1][x] = field[j][x];
-//				field[j][x] = 0;
-//			}
-//		}
-//		// adjust block vector to reflect new block positions
-//		for (int k = i + 1; k < blocksToDelete.size(); j++) {
-//			if (blocksToDelete[j].x == x && blocksToDelete[j].y < y) {
-//				blocksToDelete[j].y++;
-//			}
-//		}
-//	}
-//}
-
-
-void countNumberOfSameBlock(Position shape);
-
-void countNumberOfSameBlock(Position shape) {
-	vector<int> checky;
-	vector<int> checkx;
+void countNumberOfSameColor(Position block, int& score) {
+	int color = field[block.y][block.x];
 	int count = 0;
-	if (field[shape.y][shape.x]){
-		checky.push_back(shape.y);
-		checkx.push_back(shape.x);
-		if (field[shape.y][shape.x] == field[shape.y - 1][shape.x]) {
-			count++;
-			checky.push_back(shape.y - 1);
-			checkx.push_back(shape.x);
-			if (field[shape.y - 1][shape.x] == field[shape.y - 2][shape.x]) {
-				count++;
-				checky.push_back(shape.y - 2);
-				checkx.push_back(shape.x);
-			}
-			if (field[shape.y - 1][shape.x] == field[shape.y - 1][shape.x - 1]) {
-				count++;
-				checky.push_back(shape.y - 1);
-				checkx.push_back(shape.x - 1);
-			}
-			if (field[shape.y - 1][shape.x] == field[shape.y - 1][shape.x + 1]) {
-				count++;
-				checky.push_back(shape.y - 1);
-				checkx.push_back(shape.x + 1);
-			}
+	vector<Position> group;
+	memset(visited, false, sizeof(visited)); // reset the visited array
+	floodFill(block, color, count, group);
+	if (count >= 3) {
+		for (int i = 0; i < group.size(); i++) {
+			int y = group[i].y;
+			int x = group[i].x;
+			field[y][x] = 0;
 		}
-		if (field[shape.y][shape.x] == field[shape.y + 1][shape.x]) {
-			count++;
-			checky.push_back(shape.y + 1);
-			checkx.push_back(shape.x);
-			if (field[shape.y + 1][shape.x] == field[shape.y + 2][shape.x]) {
-				count++;
-				checky.push_back(shape.y + 2);
-				checkx.push_back(shape.x);
+		for (int i = 0; i < group.size(); i++) {
+			int y = group[i].y;
+			int x = group[i].x;
+			while (y != 0) {
+				field[y][x] = field[y - 1][x];
+				y -= 1;
 			}
-			if (field[shape.y + 1][shape.x] == field[shape.y + 1][shape.x - 1]) {
-				count++;
-				checky.push_back(shape.y + 1);
-				checkx.push_back(shape.x - 1);
-			}
-			if (field[shape.y + 1][shape.x] == field[shape.y + 1][shape.x + 1]) {
-				count++;
-				checky.push_back(shape.y + 1);
-				checkx.push_back(shape.x + 1);
-			}
-		}
-		if (field[shape.y][shape.x] == field[shape.y][shape.x + 1]) {
-			count++;
-			checky.push_back(shape.y);
-			checkx.push_back(shape.x + 1);
-			if (field[shape.y][shape.x + 1] == field[shape.y][shape.x + 2]) {
-				count++;
-				checky.push_back(shape.y);
-				checkx.push_back(shape.x + 2);
-			}
- 		}
-		if (field[shape.y][shape.x] == field[shape.y][shape.x - 1]) {
-			count++;
-			checky.push_back(shape.y);
-			checkx.push_back(shape.x - 1);
-			if (field[shape.y][shape.x - 1] == field[shape.y][shape.x - 2]) {
-				count++;
-				checky.push_back(shape.y);
-				checkx.push_back(shape.x - 2);
-			}
-		}
-	}
-	if (count >= 2) {
-		for (int i = 0; i < checkx.size(); i++) {
-			field[checky[i]][checkx[i]] = 0;
 		}
 	}
 }
@@ -218,6 +146,10 @@ int main(int argc, char* args[])
 	Button button_mute(sdlrender, "image/button/mute.png", "image/button/mute.png", 950, 10, 40, 40);
 	Button button_unmute(sdlrender, "image/button/unmute_1.png", "image/button/unmute_1.png", 950, 10, 40, 40);
 	Button button_x(sdlrender, "image/button/x_1.png", "image/button/x_2.png", 680, 235, 50, 50);
+	Button button_level(sdlrender, "image/button/level.png", "image/button/level.png", 10, 10, 40, 40);
+	Button button_easy(sdlrender, "image/button/easy_1.png", "image/button/easy_2.png", 10, 60, 40, 40);
+	Button button_med(sdlrender, "image/button/med_1.png", "image/button/med_2.png", 10, 110, 40, 40);
+	Button button_hard(sdlrender, "image/button/hard_1.png", "image/button/hard_2.png", 10, 160, 40, 40);
 
 	bool flags = true;
 	if (!window.init())
@@ -240,7 +172,7 @@ int main(int argc, char* args[])
 			int delta = 0;
 			bool isRotate = false;
 			bool gameOver = false;
-			int delay = 50;
+			int delay = 300;
 			Uint32 startTime = 0;
 			int countBlocks = 0;
 			bool isPause = false;
@@ -249,6 +181,9 @@ int main(int argc, char* args[])
 			bool playSound = true;
 			bool isCheckHs = false;
 			bool saveSuccess = false;
+			bool changeLevel = false;
+			int mode = 1;
+			int backup = delay;
 
 			SDL_Color fg = { 255, 255, 255 };
 			SDL_Color bg = { 0, 0, 0 };
@@ -275,7 +210,7 @@ int main(int argc, char* args[])
 							isRotate = true;
 							break;
 						case SDLK_DOWN:
-							delay = 50;
+							delay = delay / 5;
 							break;
 						case SDLK_LEFT:
 							delta = -1;
@@ -300,8 +235,34 @@ int main(int argc, char* args[])
 						button_hs.checkEventPress(e);
 						button_x.checkEventPress(e);
 						button_ng.checkEventPress(e);
+						button_level.checkEventPress(e);
+						button_easy.checkEventPress(e);
+						button_med.checkEventPress(e);
+						button_hard.checkEventPress(e);
 						// Check if user click on quit button
 						if (button_quit.isPressed() == true) isPlaying = false;
+
+						// Check if user choose level
+						if (button_level.isPressed() == true) changeLevel = true;
+						else if (button_easy.isPressed() == true) {
+							delay = 300;
+							backup = delay;
+							if(changeLevel == true)
+							changeLevel = false;
+						}
+						else if (button_med.isPressed() == true)
+						{
+							delay = 100;
+							backup = delay;
+							if (changeLevel == true)
+							changeLevel = false;
+						}
+						else if (button_hard.isPressed() == true) {
+							delay = 50;
+							backup = delay;
+							if (changeLevel == true)
+							changeLevel = false;
+						}
 
 						// Check if user click on high scire button
 						if (button_hs.isPressed() == true) isCheckHs = true;
@@ -334,7 +295,7 @@ int main(int argc, char* args[])
 								gameState.colorOfBlock_save[i] = colorOfBlock[i];
 							}
 							gameState.score_save = score;
-							gameState.level_save = level;
+							gameState.level_save = delay;
 							saveSuccess = saveGame(gameState, fileName);
 						}
 
@@ -358,7 +319,7 @@ int main(int argc, char* args[])
 								colorOfBlock[i] = gameState.colorOfBlock_save[i];
 							}
 							score = gameState.score_save;
-							level = gameState.level_save;
+							delay = gameState.level_save;
 							button_continue.setPressed(false);
 							isStarted = true;
 						}
@@ -413,6 +374,10 @@ int main(int argc, char* args[])
 						button_hs.checkEventPress(e);
 						button_x.checkEventPress(e);
 						button_ng.checkEventPress(e);
+						button_level.checkEventPress(e);
+						button_easy.checkEventPress(e);
+						button_med.checkEventPress(e);
+						button_hard.checkEventPress(e);
 					case SDL_MOUSEMOTION:
 						button_start.checkEventPress(e);
 						button_continue.checkEventPress(e);
@@ -427,6 +392,10 @@ int main(int argc, char* args[])
 						button_hs.checkEventPress(e);
 						button_x.checkEventPress(e);
 						button_ng.checkEventPress(e);
+						button_level.checkEventPress(e);
+						button_easy.checkEventPress(e);
+						button_med.checkEventPress(e);
+						button_hard.checkEventPress(e);
 					default:
 						break;
 					}
@@ -452,11 +421,17 @@ int main(int argc, char* args[])
 				SDL_RenderCopy(sdlrender, window.getTetrisFrame(), NULL, &desRect1);
 				
 				if (isStarted == false) {
-						button_start.drawButton(sdlrender);
-						button_continue.drawButton(sdlrender);
-						button_hs.drawButton(sdlrender);
-						button_quit.drawButton(sdlrender);
-						if (isCheckHs == true) {
+					button_start.drawButton(sdlrender);
+					button_continue.drawButton(sdlrender);
+					button_hs.drawButton(sdlrender);
+					button_quit.drawButton(sdlrender);
+					button_level.drawButton(sdlrender);
+					if (changeLevel == true) {
+						button_easy.drawButton(sdlrender);
+						button_med.drawButton(sdlrender);
+						button_hard.drawButton(sdlrender);
+					}
+					if (isCheckHs == true) {
 						// Render High Score
 						SDL_Rect desRect2 = createRect(300, 260, 400, 150);
 						SDL_Texture* texture_hs = getTextureFromText(sdlrender, to_string(hi), "font/VT323-Regular.ttf", 65, fg, bg, 1);
@@ -526,9 +501,9 @@ int main(int argc, char* args[])
 										field[shape2[i].y][shape2[i].x] = 1 + colorOfBlock[i];
 									}
 
-									for (int i = 0; i < 4; i++) {
-										countNumberOfSameBlock(shape2[i]);
-									}
+									/*for (int i = 0; i < 4; i++) {
+										countNumberOfSameColor(shape2[i], score);
+									}*/
 
 									drawBlock(); // Create new tetromino.
 								}
@@ -563,7 +538,7 @@ int main(int argc, char* args[])
 
 					delta = 0;
 					isRotate = false;
-					delay = 300;
+					delay = backup;
 					countBlocks = 0;
 
 					// Render the tetromino when it stop

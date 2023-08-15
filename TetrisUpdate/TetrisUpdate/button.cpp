@@ -17,35 +17,6 @@ Button::~Button()
 	SDL_DestroyTexture(button_pressed);
 }
 
-//void Button::checkEventPress(SDL_Event& e) {
-//	if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP) {
-//		int mouseX, mouseY;
-//		SDL_GetMouseState(&mouseX, &mouseY);
-//
-//		bool inside = true;
-//
-//		if (mouseX < x || mouseX > x + w ||
-//			mouseY < y || mouseY > y + h) {
-//			inside = false;
-//		}
-//
-//		if (inside) {
-//			if (e.type == SDL_MOUSEMOTION) {
-//				isActive = true;
-//			}
-//			if (e.type == SDL_MOUSEBUTTONDOWN) {
-//				isSelect = true;
-//			}
-//			else if (e.type == SDL_MOUSEBUTTONUP) {	
-//				if (isSelect) {
-//					isSelect = false;
-//				}
-//			}
-//		}
-//		else isActive = false;
-//	}
-//}
-
 void Button::checkEventPress(SDL_Event& e) {
     if (e.type == SDL_MOUSEMOTION) {
         int mouseX, mouseY;
