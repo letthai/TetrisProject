@@ -8,10 +8,10 @@ Window::Window(const char* title, int x, int y, int w, int h, Uint32 flags) {
 }
 
 Window::~Window() {
-	// Pha huy window
 	SDL_DestroyWindow(tetris_window);
-
-	// Pha huy renderer    
+	SDL_DestroyTexture(table);
+	SDL_DestroyTexture(tetris_background);   
+	SDL_DestroyTexture(tetris_frame);
 	SDL_DestroyRenderer(tetris_renderer);
 }
 
